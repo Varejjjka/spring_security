@@ -1,30 +1,33 @@
 package web.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import web.service.UserService;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.security.Principal;
 
 @Controller
 @RequestMapping("/")
 public class UserController {
 
-	@RequestMapping(value = "hello", method = RequestMethod.GET)
-	public String printWelcome(ModelMap model) {
-		List<String> messages = new ArrayList<>();
-		messages.add("Hello!");
-		messages.add("I'm Spring MVC-SECURITY application");
-		messages.add("5.2.0 version by sep'19 ");
-		model.addAttribute("messages", messages);
-		return "hello";
+	private final UserService userService;
+
+	@Autowired
+	public UserController(UserService userService) {
+		this.userService = userService;
 	}
 
-    @RequestMapping(value = "login", method = RequestMethod.GET)
-    public String loginPage() {
-        return "login";
-    }
+	@GetMapping
+	public String getHomePage() {
+		return "home_page";
+	}
+
+	@GetMapping("/user")
+	public String clickMe(Model model, Principal principal) {
+		model.addAttribute("oneUser", userService.getUserByName(principal.getName()));
+		return "show_user";
+	}
 
 }
